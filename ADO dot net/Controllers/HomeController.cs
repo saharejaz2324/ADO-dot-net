@@ -27,7 +27,7 @@ namespace ADO_dot_net.Controllers
                new SqlParameter("@Name", val.Name),
                new SqlParameter("@Price", val.Price),
                new SqlParameter("@Quantity", val.Quantity)
-           };
+            };
             if (db.ExecuteData(query, parameters) > 0)
             {
                 return Ok("Inserted");
@@ -41,11 +41,47 @@ namespace ADO_dot_net.Controllers
 
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
-      {
+        {
             string query = "select * from Inventory";
             DataTable dt = db.GetData(query);
             var result = new ObjectResult(dt);
             return result;
+        }
+
+        // update the data into the database through SQL Query
+
+        [HttpPut("{id}")]
+        public IActionResult ModifyData(int id, Inventory inventory)
+        {
+            string query = "UPDATE Inventory SET Name = @Name, Price = @Price , Quantity = @quantity WHERE id = " + id;
+            var parameters = new IDataParameter[]
+            {
+               new SqlParameter("@Name", inventory.Name),
+               new SqlParameter("@Price", inventory.Price),
+               new SqlParameter("@Quantity", inventory.Quantity)
+            };
+
+            if (db.ExecuteData(query, parameters) > 0)
+            {
+                return Ok("Updated");
+            }
+            else
+            {
+                return NotFound("Something went Wrong!!");
+            }
+        }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteData(int id)
+        {
+            string query = "DELETE FROM Inventory WHERE id = " + id;
+            if (db.DeleteData(query) > 0)
+            {
+                return Ok("Deleted Record Successfully");
+            }
+            else
+            {
+                return NotFound("Something went Wrong!!");
+            }
         }
     }
 }

@@ -62,6 +62,7 @@ namespace ADO_dot_net.DB
                             {
                                 cmd.Parameters.Add(para);
                             }
+                            
                             rows = cmd.ExecuteNonQuery();
                         }
                     }
@@ -69,10 +70,31 @@ namespace ADO_dot_net.DB
             }
             catch (Exception)
             {
-
                 throw;
             }
             return rows;
+        }
+        public int DeleteData(string query)
+        {
+            int row = -1;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(sqlDataSource))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        row = cmd.ExecuteNonQuery(); 
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+
+            return row;
         }
     }
 }
