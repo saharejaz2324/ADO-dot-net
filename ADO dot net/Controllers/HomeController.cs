@@ -47,6 +47,11 @@ namespace ADO_dot_net.Controllers
             var result = new ObjectResult(dt);
             return result;
         }
+        //[HttpGet("{tableName}")]
+        //public IActionResult getDataFromSpecificTable(string tableName, object obj)
+        //{
+
+        //}
 
         // update the data into the database through SQL Query
 
@@ -83,5 +88,34 @@ namespace ADO_dot_net.Controllers
                 return NotFound("Something went Wrong!!");
             }
         }
+
+        [HttpPost("createTable/{tableName}")]
+        public IActionResult CreateTable(string tableName)
+        {
+            string query = "CREATE TABLE " + tableName + " ( id int identity(1,1) NOT NULL PRIMARY KEY, name VARCHAR(255) NOT NULL)";
+            if (db.CreateTable(query))
+            {
+                return Ok("Created");
+            }
+            else
+            {
+                return NotFound("Table existing in the database");
+            }
+        }
+
+        [HttpPost("alterTable/{tableName}")]
+        public IActionResult alterTable(string tableName, [FromBody]AlterTable columnContent)
+        {
+            string query = "ALTER TABLE " + tableName + " ADD " + columnContent.columnName + " " + columnContent.columnType;
+            if (db.AddColumn(query))
+            {
+                return Ok("Added");
+            }
+            else
+            {
+                return NotFound("Already Exist");
+            }
+        }
+
     }
 }

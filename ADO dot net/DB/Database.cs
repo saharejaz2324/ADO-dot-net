@@ -96,5 +96,43 @@ namespace ADO_dot_net.DB
 
             return row;
         }
+        public bool CreateTable(string query)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(sqlDataSource))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.ExecuteReader();
+                        return true;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+        }
+        public bool AddColumn (string query)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(sqlDataSource))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.ExecuteNonQuery();
+                        return true;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                return false;
+            }
+        }
     }
 }
