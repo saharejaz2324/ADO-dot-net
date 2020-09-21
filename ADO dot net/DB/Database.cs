@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using ADO_dot_net.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -17,8 +18,8 @@ namespace ADO_dot_net.DB
     public class Database
     {
         public static string sqlDataSource = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Company;Trusted_Connection=True;";
-        //public static string sqlDataSource = "Data Source=DESKTOP-GV4424J;Initial Catalog=TestDB ; Integrated Security = True;";
-
+      
+        private string TestProcedure = " CREATE PROCEDURE TestProcedure AS BEGIN SELECT * FROM Inventory";
         public DataTable GetData(string str)
         {
             DataTable objresult = new DataTable();
@@ -133,6 +134,49 @@ namespace ADO_dot_net.DB
             {
                 return false;
             }
+        }
+
+
+        // Stored Procedures
+        public async Task<List<Inventory>> getAll()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(sqlDataSource))
+                {
+                    using (SqlCommand cmd = new SqlCommand("getAllData", conn))
+                    {
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        var response = new List<Inventory>();
+                        await conn.OpenAsync();
+                        using (var reader = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                response.Add(MapToValue(reader));
+                            }
+                        }
+                        return response;
+                    }
+
+                }
+            }
+            catch (SqlException ex)
+            {
+
+                throw ex;
+            }
+        }
+        private Inventory MapToValue(SqlDataReader reader)
+        {
+            return new Inventory()
+            {
+                Id = (int)reader["Id"],
+                Name = reader["Name"].ToString(),
+                Price = (decimal)reader["Price"],
+                Quantity = (int)reader["Quantity"],
+                AddedOn = (DateTime)reader["AddedOn"]
+            };
         }
     }
 }

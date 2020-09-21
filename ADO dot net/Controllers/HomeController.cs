@@ -117,5 +117,14 @@ namespace ADO_dot_net.Controllers
             }
         }
 
+
+        //Stored Procedure 
+
+        [HttpGet("getAllSP")]
+        public async Task<List<Inventory>> GetAllThroughSP()
+        {
+            return await db.getAll();
+        }
+
     }
 }
